@@ -1,0 +1,10 @@
+<p-card
+  [header]="characterName"
+  [subheader]="characterGender"
+  [style]="{ width: '360px' }"
+  styleClass="card-container"
+>
+  <ng-template pTemplate="header">
+    <img [alt]="characterName" [src]="imageUrl" />
+  </ng-template>
+</p-card>
