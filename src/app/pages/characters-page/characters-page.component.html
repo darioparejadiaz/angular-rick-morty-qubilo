@@ -1,4 +1,21 @@
+<!-- ******************************* -->
+
 <div class="character-page-container">
+  <!-- ******************************* -->
+  <!-- ******************************* -->
+
+  <div>
+    <p>
+      {{ this.currentIndex + 1 }} -
+      <span *ngIf="!truncateResult">{{ this.endIndex }}</span>
+      <span *ngIf="truncateResult">{{ this.totalCharacters }}</span>
+      of {{ this.totalCharacters }} characters with "{{ gender }}" gender
+    </p>
+  </div>
+
+  <!-- ******************************* -->
+  <!-- ******************************* -->
+
   <div class="cards-container">
     <ng-container *ngFor="let character of charactersPerPage">
       <app-character-card
@@ -9,6 +26,30 @@
       />
     </ng-container>
   </div>
-  <button (click)="onLoadNextCharacters()" [disabled]="isNextCharactersButtonDisabled">cargar</button>
-  <button (click)="onLoadPreviousCharacters()" [disabled]="isPreviousCharactersButtonDisabled">anterior</button>
+
+  <!-- ******************************* -->
+  <!-- ******************************* -->
+
+  <div class="buttons-center-grid">
+    <div class="buttons-container">
+      <p-button
+        label="Anterior"
+        icon="pi pi-arrow-left"
+        (click)="onLoadPreviousCharacters()"
+        [disabled]="isPreviousCharactersButtonDisabled"
+      />
+
+      <!--  -->
+
+      <p-button
+        label="Siguiente"
+        icon="pi pi-arrow-right"
+        (click)="onLoadNextCharacters()"
+        [disabled]="isNextCharactersButtonDisabled"
+      />
+    </div>
+  </div>
+
+  <!-- ******************************* -->
+  <!-- ******************************* -->
 </div>

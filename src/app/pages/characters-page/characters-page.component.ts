@@ -10,6 +10,7 @@ import { CharactersService } from '../../services/characters.service';
 import { Character } from '../../models/character.model';
 import { CharacterResponse } from '../../models/character-response.model';
 import { forkJoin } from 'rxjs';
+import { ButtonModule } from 'primeng/button';
 
 //**************************************************************************** */
 //**************************************************************************** */
@@ -19,7 +20,7 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-characters-page',
   standalone: true,
-  imports: [CommonModule, CharacterCardComponent],
+  imports: [CommonModule, CharacterCardComponent, ButtonModule],
   templateUrl: './characters-page.component.html',
   styleUrl: './characters-page.component.css',
 })
@@ -33,13 +34,17 @@ export class CharactersPageComponent implements OnInit {
 
   private readonly CARDS_PER_PAGE: number = 9;
 
-  private currentIndex: number = 0;
-  private endIndex: number = 0;
+  public currentIndex: number = 0;
+  public endIndex: number = 0;
 
-  private totalCharacters: number = 0;
+  public totalCharacters: number = 0;
 
   public isNextCharactersButtonDisabled: boolean = false;
   public isPreviousCharactersButtonDisabled: boolean = true;
+
+  public truncateResult: boolean = false;
+
+  public gender: string = 'all';
 
   //*************************************** */
   //*************************************** */
@@ -52,18 +57,24 @@ export class CharactersPageComponent implements OnInit {
   // Life cycle
 
   ngOnInit(): void {
-    this.getAllCharacters();
+    if (
+      localStorage.getItem('currentIndex') &&
+      localStorage.getItem('gender')
+    ) {
+      this.getState();
+      this.getCharacters(this.gender);
+    } else {
+      this.getAllCharacters();
+    }
 
     this.charactersService.gender$.subscribe((gender) => {
-      if (gender === 'all') {
-        this.currentIndex = 0;
-        this.endIndex = 0;
-        this.getAllCharacters();
-      } else {
-        this.currentIndex = 0;
-        this.endIndex = 0;
-        this.getFilteredCharacters(gender);
-      }
+      this.currentIndex = 0;
+      this.endIndex = 0;
+      this.gender = gender;
+
+      this.saveState();
+
+      this.getCharacters(this.gender);
     });
   }
 
@@ -71,9 +82,10 @@ export class CharactersPageComponent implements OnInit {
   //*************************************** */
   // Methods
 
-  getAllCharacters() {
-    this.characters = [];
-    this.charactersPerPage = [];
+  private getAllCharacters() {
+    this.resetState();
+
+    if(!localStorage.getItem("currentIndex")) this.resetState();
 
     this.charactersService
       .getAllCharacters()
@@ -96,9 +108,12 @@ export class CharactersPageComponent implements OnInit {
       });
   }
 
-  getFilteredCharacters(gender: string) {
-    this.characters = [];
-    this.charactersPerPage = [];
+  //*************************************** */
+
+  private getFilteredCharacters(gender: string) {
+    this.resetState();
+
+    if(!localStorage.getItem("currentIndex")) this.resetState();
 
     this.charactersService
       .getCharactersByGender(gender)
@@ -123,7 +138,9 @@ export class CharactersPageComponent implements OnInit {
       });
   }
 
-  updateCharacters() {
+  //*************************************** */
+
+  private updateCharacters() {
     this.endIndex = this.currentIndex + this.CARDS_PER_PAGE;
     this.charactersPerPage = this.characters.slice(
       this.currentIndex,
@@ -133,25 +150,103 @@ export class CharactersPageComponent implements OnInit {
     console.log(this.charactersPerPage);
   }
 
-  onLoadNextCharacters() {
-    if (this.endIndex < this.totalCharacters) {
+  //*************************************** */
+
+  public onLoadNextCharacters() {
+    this.currentIndex += this.CARDS_PER_PAGE;
+    this.saveState();
+    this.changeButtonsState('next');
+    this.updateCharacters();
+  }
+
+  //*************************************** */
+
+  public onLoadPreviousCharacters() {
+    this.currentIndex -= this.CARDS_PER_PAGE;
+    this.saveState();
+    this.changeButtonsState('previous');
+    this.updateCharacters();
+  }
+
+  //*************************************** */
+
+  private resetState() {
+    this.characters = [];
+    this.charactersPerPage = [];
+
+    this.isNextCharactersButtonDisabled = false;
+    this.isPreviousCharactersButtonDisabled = true;
+
+    this.truncateResult = false;
+  }
+
+  //*************************************** */
+
+  private changeButtonsState(action: 'previous' | 'next') {
+    if (action === 'previous') {
+      this.truncateResult = false;
       this.isNextCharactersButtonDisabled = false;
+      if (this.currentIndex <= 0) {
+        this.isPreviousCharactersButtonDisabled = true;
+      }
+    } else if (action === 'next') {
       this.isPreviousCharactersButtonDisabled = false;
-      this.currentIndex += this.CARDS_PER_PAGE;
-      this.updateCharacters();
-    } else {
-      this.isNextCharactersButtonDisabled = true;
+      if (
+        this.currentIndex > this.totalCharacters ||
+        this.endIndex + this.CARDS_PER_PAGE > this.totalCharacters
+      ) {
+        this.truncateResult = true;
+        this.isNextCharactersButtonDisabled = true;
+      }
     }
   }
 
-  onLoadPreviousCharacters() {
-    const indexCount: number = this.currentIndex - this.CARDS_PER_PAGE;
-    if (indexCount >= 0) {
-      this.isPreviousCharactersButtonDisabled = false;
-      this.currentIndex -= this.CARDS_PER_PAGE;
-      this.updateCharacters();
+  //*************************************** */
+
+  private saveState() {
+    localStorage.setItem('currentIndex', this.currentIndex.toString());
+    localStorage.setItem('gender', this.gender);
+    localStorage.setItem(
+      'nextBtn',
+      JSON.stringify(this.isNextCharactersButtonDisabled)
+    );
+    localStorage.setItem(
+      'prevtBtn',
+      JSON.stringify(this.isPreviousCharactersButtonDisabled)
+    );
+    localStorage.setItem('truncated', JSON.stringify(this.truncateResult));
+  }
+
+  //*************************************** */
+
+  private getState() {
+    this.currentIndex = Number(localStorage.getItem('currentIndex')) || 0;
+    this.gender = localStorage.getItem('gender') || 'all';
+
+    localStorage.getItem('nextBtn') === 'true'
+      ? (this.isNextCharactersButtonDisabled = true)
+      : (this.isNextCharactersButtonDisabled = false);
+
+    localStorage.getItem('prevtBtn') === 'true'
+      ? (this.isPreviousCharactersButtonDisabled = true)
+      : (this.isPreviousCharactersButtonDisabled = false);
+
+    localStorage.getItem('truncated') === 'true'
+      ? (this.truncateResult = true)
+      : (this.truncateResult = false);
+  }
+
+  //*************************************** */
+
+  private getCharacters(gender: string) {
+    if (gender === 'all') {
+      this.getAllCharacters();
     } else {
-      this.isPreviousCharactersButtonDisabled = true;
+      this.getFilteredCharacters(gender);
     }
   }
 }
+
+//**************************************************************************** */
+//**************************************************************************** */
+//**************************************************************************** */
