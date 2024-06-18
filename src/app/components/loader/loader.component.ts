@@ -3,24 +3,22 @@
 //**************************************************************************** */
 // Imports
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { MenubarModule } from 'primeng/menubar';
-import { GenderSelectComponent } from '../gender-select/gender-select.component';
+import { Component } from '@angular/core';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 //**************************************************************************** */
 //**************************************************************************** */
 //**************************************************************************** */
-// Header component
+// Loader component
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-loader',
   standalone: true,
-  imports: [MenubarModule, GenderSelectComponent],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.css',
-  encapsulation: ViewEncapsulation.None,
+  imports: [ProgressSpinnerModule],
+  templateUrl: './loader.component.html',
+  styleUrl: './loader.component.css',
 })
-export class HeaderComponent {}
+export class LoaderComponent {}
 
 //**************************************************************************** */
 //**************************************************************************** */

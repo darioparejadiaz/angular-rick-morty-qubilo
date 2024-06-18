@@ -1,5 +1,8 @@
+<!-- ******************************* -->
+<!-- ******************************* -->
+
 <p-card
-  [header]="characterName"
+  [header]="characterIdentity"
   [subheader]="characterGender"
   [style]="{ width: '360px', height: '100%' }"
   styleClass="card-container"
@@ -7,6 +10,7 @@
   <ng-template pTemplate="header">
     <img [alt]="characterName" [src]="imageUrl" />
   </ng-template>
-
-  <p>{{ characterId }}</p>
 </p-card>
+
+<!-- ******************************* -->
+<!-- ******************************* -->

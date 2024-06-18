@@ -1,5 +1,15 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+//**************************************************************************** */
+//**************************************************************************** */
+//**************************************************************************** */
+// Imports
+
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { CardModule } from 'primeng/card';
+
+//**************************************************************************** */
+//**************************************************************************** */
+//**************************************************************************** */
+// Character card component
 
 @Component({
   selector: 'app-character-card',
@@ -7,13 +17,29 @@ import { CardModule } from 'primeng/card';
   imports: [CardModule],
   templateUrl: './character-card.component.html',
   styleUrl: './character-card.component.css',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
-export class CharacterCardComponent {
+export class CharacterCardComponent implements OnInit {
+  //*************************************** */
+  //*************************************** */
+  // Props
 
   @Input() characterId!: number;
   @Input() imageUrl!: string;
   @Input() characterName!: string;
   @Input() characterGender!: string;
 
+  public characterIdentity!: string;
+
+  //*************************************** */
+  //*************************************** */
+  // Life cycle
+
+  ngOnInit(): void {
+    this.characterIdentity = `${this.characterId} - ${this.characterName}`;
+  }
 }
+
+//**************************************************************************** */
+//**************************************************************************** */
+//**************************************************************************** */

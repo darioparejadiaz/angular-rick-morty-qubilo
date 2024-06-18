@@ -1,11 +1,30 @@
-.logo-title-container{
+/* ******************************* */
+/* ******************************* */
+
+.menu {
+  position: fixed;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ******************************* */
+/* ******************************* */
+
+.logo-title-container {
   display: grid;
   grid-auto-flow: column;
   align-items: center;
   gap: 8px;
 }
 
-.logo-title-container .title{
-  font-family:'BlinkMacSystemFont','Segoe UI','Roboto','Helvetica','Arial',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';
+/* ******************************* */
+/* ******************************* */
+
+.logo-title-container .title {
+  font-family: "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial",
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-weight: 700;
 }
+
+/* ******************************* */
+/* ******************************* */

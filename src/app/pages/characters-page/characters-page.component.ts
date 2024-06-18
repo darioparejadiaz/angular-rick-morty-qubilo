@@ -11,6 +11,7 @@ import { Character } from '../../models/character.model';
 import { CharacterResponse } from '../../models/character-response.model';
 import { forkJoin } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
+import { LoaderComponent } from '../../components/loader/loader.component';
 
 //**************************************************************************** */
 //**************************************************************************** */
@@ -20,7 +21,12 @@ import { ButtonModule } from 'primeng/button';
 @Component({
   selector: 'app-characters-page',
   standalone: true,
-  imports: [CommonModule, CharacterCardComponent, ButtonModule],
+  imports: [
+    CommonModule,
+    CharacterCardComponent,
+    ButtonModule,
+    LoaderComponent,
+  ],
   templateUrl: './characters-page.component.html',
   styleUrl: './characters-page.component.css',
 })
@@ -46,6 +52,8 @@ export class CharactersPageComponent implements OnInit {
 
   public gender: string = 'all';
 
+  public isSpinnerVisible: boolean = true;
+
   //*************************************** */
   //*************************************** */
   // Dependency Injection
@@ -57,11 +65,9 @@ export class CharactersPageComponent implements OnInit {
   // Life cycle
 
   ngOnInit(): void {
-    if (
-      localStorage.getItem('currentIndex') &&
-      localStorage.getItem('gender')
-    ) {
+    if (localStorage.getItem('currentIndex')) {
       this.getState();
+      this.printState();
       this.getCharacters(this.gender);
     } else {
       this.getAllCharacters();
@@ -71,6 +77,8 @@ export class CharactersPageComponent implements OnInit {
       this.currentIndex = 0;
       this.endIndex = 0;
       this.gender = gender;
+
+      this.resetState();
 
       this.saveState();
 
@@ -82,10 +90,23 @@ export class CharactersPageComponent implements OnInit {
   //*************************************** */
   // Methods
 
-  private getAllCharacters() {
-    this.resetState();
+  private getCharacters(gender: string): void {
+    if (gender === 'all') {
+      this.getAllCharacters();
+    } else {
+      this.getFilteredCharacters(gender);
+    }
+  }
 
-    if(!localStorage.getItem("currentIndex")) this.resetState();
+  //*************************************** */
+
+  private getAllCharacters() {
+    this.characters = [];
+    this.charactersPerPage = [];
+
+    if (!localStorage.getItem('currentIndex')) this.resetState();
+
+    this.isSpinnerVisible = true;
 
     this.charactersService
       .getAllCharacters()
@@ -105,15 +126,20 @@ export class CharactersPageComponent implements OnInit {
           console.log(this.characters);
           this.updateCharacters();
         });
+
+        this.isSpinnerVisible = false;
       });
   }
 
   //*************************************** */
 
   private getFilteredCharacters(gender: string) {
-    this.resetState();
+    this.characters = [];
+    this.charactersPerPage = [];
 
-    if(!localStorage.getItem("currentIndex")) this.resetState();
+    if (!localStorage.getItem('currentIndex')) this.resetState();
+
+    this.isSpinnerVisible = true;
 
     this.charactersService
       .getCharactersByGender(gender)
@@ -135,6 +161,8 @@ export class CharactersPageComponent implements OnInit {
           console.log(this.characters);
           this.updateCharacters();
         });
+
+        this.isSpinnerVisible = false;
       });
   }
 
@@ -154,18 +182,18 @@ export class CharactersPageComponent implements OnInit {
 
   public onLoadNextCharacters() {
     this.currentIndex += this.CARDS_PER_PAGE;
-    this.saveState();
     this.changeButtonsState('next');
     this.updateCharacters();
+    this.saveState();
   }
 
   //*************************************** */
 
   public onLoadPreviousCharacters() {
     this.currentIndex -= this.CARDS_PER_PAGE;
-    this.saveState();
     this.changeButtonsState('previous');
     this.updateCharacters();
+    this.saveState();
   }
 
   //*************************************** */
@@ -219,7 +247,7 @@ export class CharactersPageComponent implements OnInit {
 
   //*************************************** */
 
-  private getState() {
+  private getState(): void {
     this.currentIndex = Number(localStorage.getItem('currentIndex')) || 0;
     this.gender = localStorage.getItem('gender') || 'all';
 
@@ -238,12 +266,12 @@ export class CharactersPageComponent implements OnInit {
 
   //*************************************** */
 
-  private getCharacters(gender: string) {
-    if (gender === 'all') {
-      this.getAllCharacters();
-    } else {
-      this.getFilteredCharacters(gender);
-    }
+  private printState(): void {
+    console.log('Current Index => ', this.currentIndex);
+    console.log('Gender => ', this.gender);
+    console.log('Next Button => ', this.isNextCharactersButtonDisabled);
+    console.log('Previous Button => ', this.isPreviousCharactersButtonDisabled);
+    console.log('Truncate result => ', this.truncateResult);
   }
 }
 
