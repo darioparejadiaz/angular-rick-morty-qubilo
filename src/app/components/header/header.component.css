@@ -1,0 +1,11 @@
+.logo-title-container{
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-title-container .title{
+  font-family:'BlinkMacSystemFont','Segoe UI','Roboto','Helvetica','Arial',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';
+  font-weight: 700;
+}

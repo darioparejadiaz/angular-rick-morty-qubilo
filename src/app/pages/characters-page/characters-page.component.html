@@ -1,11 +1,14 @@
 <div class="character-page-container">
   <div class="cards-container">
-    <ng-container *ngFor="let character of characters">
+    <ng-container *ngFor="let character of charactersPerPage">
       <app-character-card
         [imageUrl]="character.image"
         [characterName]="character.name"
         [characterGender]="character.gender"
+        [characterId]="character.id"
       />
     </ng-container>
   </div>
+  <button (click)="onLoadNextCharacters()" [disabled]="isNextCharactersButtonDisabled">cargar</button>
+  <button (click)="onLoadPreviousCharacters()" [disabled]="isPreviousCharactersButtonDisabled">anterior</button>
 </div>

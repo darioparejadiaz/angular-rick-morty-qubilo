@@ -1,4 +1,6 @@
 .character-page-container{
+  padding: 20px;
+
   display: grid;
   place-content: center;
 }

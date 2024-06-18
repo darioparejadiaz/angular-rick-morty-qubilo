@@ -11,6 +11,7 @@ import { CardModule } from 'primeng/card';
 })
 export class CharacterCardComponent {
 
+  @Input() characterId!: number;
   @Input() imageUrl!: string;
   @Input() characterName!: string;
   @Input() characterGender!: string;

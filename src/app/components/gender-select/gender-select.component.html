@@ -1,0 +1,11 @@
+<form [formGroup]="genderSelector">
+  <p-dropdown
+    formControlName="gender"
+    [options]="genders"
+    optionLabel="name"
+    optionValue="code"
+    styleClass="dropdown"
+    placeholder="Select a gender"
+  >
+  </p-dropdown>
+</form>
